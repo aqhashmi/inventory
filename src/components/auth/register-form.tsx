@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,7 +22,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export function RegisterForm() {
-  const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
   const {
     register,
@@ -59,8 +57,9 @@ export function RegisterForm() {
     // Auto sign-in after successful registration.
     await authenticate({ email: values.email, password: values.password });
     toast.success("Account created. Welcome to InvoFlow!");
-    router.push("/dashboard");
-    router.refresh();
+    // Full-page navigation: guarantees the new session cookie is used and
+    // avoids the router.push/refresh race that can cancel the redirect.
+    window.location.href = "/dashboard";
   }
 
   return (
